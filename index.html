@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PriceFlow AI — ML-Driven Dynamic Pricing System with demand prediction, price optimization, and safety rails.">
+  <title>PriceFlow AI — Dynamic Pricing System</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+</head>
+<body>
+  <div class="app-layout">
+
+    <!-- ═══════ Sidebar ═══════ -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="logo">
+          <div class="logo-icon">⚡</div>
+          <div class="logo-text">Price<span>Flow</span> AI</div>
+        </a>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-item active" data-section="dashboard" id="nav-dashboard">
+          <span class="nav-icon">📊</span> Dashboard
+        </div>
+        <div class="nav-item" data-section="products" id="nav-products">
+          <span class="nav-icon">🏷️</span> Products
+        </div>
+        <div class="nav-item" data-section="simulation" id="nav-simulation">
+          <span class="nav-icon">🧪</span> Simulation Lab
+        </div>
+        <div class="nav-item" data-section="safety" id="nav-safety">
+          <span class="nav-icon">🛡️</span> Safety & Rollout
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="rollout-status">
+          <span style="font-size:0.78rem; color: var(--text-dim);">Mode:</span>
+          <span id="rollout-indicator">👁️ Shadow</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ═══════ Main Content ═══════ -->
+    <main class="main-content">
+
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-title">Dynamic Pricing Engine</div>
+        <div class="topbar-controls">
+          <div class="objective-toggle">
+            <button class="objective-btn active" data-objective="revenue">💰 Revenue</button>
+            <button class="objective-btn" data-objective="profit">📈 Profit</button>
+            <button class="objective-btn" data-objective="margin">📊 Margin</button>
+          </div>
+          <div class="rollout-toggle">
+            <button class="rollout-btn active" data-mode="shadow">👁️ Shadow</button>
+            <button class="rollout-btn" data-mode="canary">🧪 Canary</button>
+            <button class="rollout-btn" data-mode="live">🚀 Live</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- ══════════════════════════════════════════════
+           SECTION: Dashboard
+           ══════════════════════════════════════════════ -->
+      <section class="main-section active" id="section-dashboard" style="display:block;">
+        <div class="section-header">
+          <h1 class="section-title">Dashboard Overview</h1>
+          <p class="section-subtitle">Real-time pricing intelligence across your product portfolio</p>
+        </div>
+
+        <!-- KPI Strip -->
+        <div class="kpi-strip">
+          <div class="kpi-card">
+            <div class="kpi-label">Projected Daily Revenue</div>
+            <div class="kpi-value" id="kpi-total-revenue">$0</div>
+            <div class="kpi-sub">Optimized across all products</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Revenue Lift</div>
+            <div class="kpi-value" id="kpi-revenue-lift">+0%</div>
+            <div class="kpi-sub">vs. current static pricing</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Active Products</div>
+            <div class="kpi-value" id="kpi-active-products">0</div>
+            <div class="kpi-sub">
+              <span id="stat-increases" style="color:var(--success)">0</span> ↑ &nbsp;
+              <span id="stat-decreases" style="color:var(--danger)">0</span> ↓ &nbsp;
+              <span id="stat-unchanged" style="color:var(--text-dim)">0</span> ─
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Average Margin</div>
+            <div class="kpi-value" id="kpi-avg-margin">0%</div>
+            <div class="kpi-sub">After optimization</div>
+          </div>
+        </div>
+
+        <!-- Revenue Chart + Top Movers -->
+        <div class="dashboard-grid">
+          <div class="glass-card">
+            <h3 style="font-size:0.95rem; font-weight:600; margin-bottom:16px;">Revenue: Actual vs. Optimized Projection (30 Days)</h3>
+            <div class="chart-container">
+              <canvas id="revenue-overview-chart"></canvas>
+            </div>
+          </div>
+          <div class="glass-card">
+            <h3 style="font-size:0.95rem; font-weight:600; margin-bottom:16px;">Top Revenue Movers</h3>
+            <div class="top-movers" id="top-movers-list"></div>
+          </div>
+        </div>
+
+        <!-- Category Breakdown -->
+        <div class="glass-card" style="max-width:480px;">
+          <h3 style="font-size:0.95rem; font-weight:600; margin-bottom:16px;">Revenue by Category</h3>
+          <div class="chart-container" style="height:280px;">
+            <canvas id="category-chart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════
+           SECTION: Products
+           ══════════════════════════════════════════════ -->
+      <section class="main-section" id="section-products">
+        <div class="section-header">
+          <h1 class="section-title">Product Pricing</h1>
+          <p class="section-subtitle">View and manage pricing recommendations for all products &nbsp;<span id="product-count" style="color:var(--primary); font-weight:600;"></span></p>
+        </div>
+
+        <div class="products-toolbar">
+          <div class="filter-bar">
+            <button class="filter-category-btn active" data-category="all">All</button>
+            <button class="filter-category-btn" data-category="Electronics">⚡ Electronics</button>
+            <button class="filter-category-btn" data-category="Fashion">👗 Fashion</button>
+            <button class="filter-category-btn" data-category="Home & Living">🏠 Home</button>
+            <button class="filter-category-btn" data-category="Food & Beverage">🍕 Food</button>
+          </div>
+          <div class="sort-wrapper">
+            <label for="sort-select">Sort by:</label>
+            <select id="sort-select">
+              <option value="revenue-impact">Revenue Impact</option>
+              <option value="change-percent">Price Change %</option>
+              <option value="price-high">Price: High → Low</option>
+              <option value="price-low">Price: Low → High</option>
+              <option value="elasticity">Elasticity</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="product-grid"></div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════
+           SECTION: Simulation Lab
+           ══════════════════════════════════════════════ -->
+      <section class="main-section" id="section-simulation">
+        <div class="section-header">
+          <h1 class="section-title">Simulation Lab</h1>
+          <p class="section-subtitle">Run what-if scenarios to explore pricing under different market conditions</p>
+        </div>
+
+        <div class="glass-card" style="margin-bottom:24px;">
+          <h3 style="font-size:0.95rem; font-weight:600; margin-bottom:16px;">Scenario Configuration</h3>
+
+          <div class="sim-controls-grid">
+            <div class="sim-control">
+              <label for="sim-product-select">Product</label>
+              <select id="sim-product-select"><option value="">— Select a product —</option></select>
+            </div>
+            <div class="sim-control">
+              <label for="sim-competitor-price">Competitor Price ($)</label>
+              <input type="number" id="sim-competitor-price" step="0.01" placeholder="e.g. 49.99">
+            </div>
+            <div class="sim-control">
+              <label for="sim-stock-level">Stock Level</label>
+              <select id="sim-stock-level">
+                <option value="low">Low (&lt; 20 units)</option>
+                <option value="medium" selected>Medium (20–80)</option>
+                <option value="high">High (&gt; 80)</option>
+              </select>
+            </div>
+            <div class="sim-control">
+              <label for="sim-month">Month</label>
+              <select id="sim-month">
+                <option value="0">January</option><option value="1">February</option>
+                <option value="2">March</option><option value="3">April</option>
+                <option value="4">May</option><option value="5">June</option>
+                <option value="6">July</option><option value="7">August</option>
+                <option value="8">September</option><option value="9">October</option>
+                <option value="10">November</option><option value="11">December</option>
+              </select>
+            </div>
+            <div class="sim-control">
+              <label for="sim-holiday-boost">Holiday Boost (0–0.4)</label>
+              <input type="number" id="sim-holiday-boost" min="0" max="0.4" step="0.05" value="0">
+            </div>
+            <div class="sim-control">
+              <label for="sim-demand-lag">Recent Demand Avg (7d)</label>
+              <input type="number" id="sim-demand-lag" min="1" value="30">
+            </div>
+            <div class="sim-control">
+              <label>&nbsp;</label>
+              <div class="checkbox-wrapper">
+                <input type="checkbox" id="sim-is-weekend">
+                <label for="sim-is-weekend" style="font-size:0.85rem; color:var(--text);">Weekend</label>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" id="sim-run-btn">🚀 Run Simulation</button>
+        </div>
+
+        <!-- Simulation Results -->
+        <div id="sim-results" style="display:none;" class="glass-card" style="margin-bottom:24px;"></div>
+
+        <div class="sim-charts">
+          <div class="glass-card">
+            <h3 style="font-size:0.95rem; font-weight:600; margin-bottom:12px;">Demand Curve</h3>
+            <div class="sim-chart-wrapper"><canvas id="sim-demand-chart"></canvas></div>
+          </div>
+          <div class="glass-card">
+            <h3 style="font-size:0.95rem; font-weight:600; margin-bottom:12px;">Revenue & Profit Curve</h3>
+            <div class="sim-chart-wrapper"><canvas id="sim-revenue-chart"></canvas></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════
+           SECTION: Safety & Rollout
+           ══════════════════════════════════════════════ -->
+      <section class="main-section" id="section-safety">
+        <div class="section-header">
+          <h1 class="section-title">Safety Rails & Rollout</h1>
+          <p class="section-subtitle">Configure guardrails and review the pricing change audit log</p>
+        </div>
+
+        <div class="safety-grid">
+          <!-- Safety Parameters -->
+          <div class="glass-card">
+            <h3 style="font-size:0.95rem; font-weight:600; margin-bottom:20px;">⚙️ Safety Parameters</h3>
+            <div class="safety-params">
+              <div class="safety-param">
+                <label for="safety-min-margin">Minimum Margin (%)</label>
+                <input type="number" id="safety-min-margin" min="0" max="100" value="10">
+                <span class="param-help">Price floor = cost × (1 + margin%)</span>
+              </div>
+              <div class="safety-param">
+                <label for="safety-max-change">Max Price Change per Adjustment (%)</label>
+                <input type="number" id="safety-max-change" min="1" max="50" value="15">
+                <span class="param-help">Prevents drastic price swings</span>
+              </div>
+              <div class="safety-param">
+                <label for="safety-rate-limit">Rate Limit (hours between changes)</label>
+                <input type="number" id="safety-rate-limit" min="1" max="168" value="24">
+                <span class="param-help">Minimum wait time between price updates</span>
+              </div>
+              <button class="btn btn-success" id="safety-save-btn">💾 Save Parameters</button>
+            </div>
+          </div>
+
+          <!-- Audit Log -->
+          <div class="glass-card">
+            <h3 style="font-size:0.95rem; font-weight:600; margin-bottom:20px;">📋 Price Change Audit Log</h3>
+            <div id="change-log-list"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ═══════ Product Detail Panel ═══════ -->
+  <div class="panel-backdrop" onclick="UI.closeProductDetail()"></div>
+  <div id="product-detail-panel">
+    <div class="panel-header">
+      <div>
+        <div class="detail-product-name"></div>
+        <div class="detail-product-category"></div>
+        <div class="detail-product-brand"></div>
+      </div>
+      <button class="close-panel-btn" aria-label="Close">✕</button>
+    </div>
+    <div class="panel-body">
+      <!-- Pricing Summary -->
+      <div class="panel-section">
+        <div class="panel-section-title">Pricing Summary</div>
+        <div class="detail-pricing-grid">
+          <div class="detail-stat">
+            <div class="detail-stat-label">Current Price</div>
+            <div class="detail-stat-value detail-current-price">—</div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">Suggested Price</div>
+            <div class="detail-stat-value detail-suggested-price" style="color:var(--primary)">—</div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">Change</div>
+            <div class="detail-stat-value"><span class="detail-change-badge badge">—</span></div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">Margin</div>
+            <div class="detail-stat-value detail-margin">—</div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">Price Floor</div>
+            <div class="detail-stat-value detail-floor" style="color:var(--danger)">—</div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">Price Ceiling</div>
+            <div class="detail-stat-value detail-ceiling" style="color:var(--danger)">—</div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">Elasticity</div>
+            <div class="detail-stat-value"><span class="detail-elasticity">—</span> <span class="detail-elasticity-label" style="font-size:0.72rem;">—</span></div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">Revenue Impact</div>
+            <div class="detail-stat-value detail-revenue-impact">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expected Metrics -->
+      <div class="panel-section">
+        <div class="panel-section-title">Predicted Outcomes</div>
+        <div class="detail-pricing-grid">
+          <div class="detail-stat"><div class="detail-stat-label">Exp. Revenue</div><div class="detail-stat-value detail-exp-revenue">—</div></div>
+          <div class="detail-stat"><div class="detail-stat-label">Exp. Demand</div><div class="detail-stat-value detail-exp-demand">—</div></div>
+          <div class="detail-stat"><div class="detail-stat-label">Exp. Profit</div><div class="detail-stat-value detail-exp-profit">—</div></div>
+        </div>
+      </div>
+
+      <!-- Demand Curve -->
+      <div class="panel-section">
+        <div class="panel-section-title">Demand Curve</div>
+        <div class="detail-chart-container"><canvas id="detail-demand-chart"></canvas></div>
+      </div>
+
+      <!-- Revenue/Profit Curve -->
+      <div class="panel-section">
+        <div class="panel-section-title">Revenue & Profit Curve</div>
+        <div class="detail-chart-container"><canvas id="detail-revenue-chart"></canvas></div>
+      </div>
+
+      <!-- Price History -->
+      <div class="panel-section">
+        <div class="panel-section-title">Price & Demand History (90 Days)</div>
+        <div class="detail-chart-container"><canvas id="detail-history-chart"></canvas></div>
+      </div>
+
+      <!-- Feature Importance -->
+      <div class="panel-section">
+        <div class="panel-section-title">Feature Importance (GBM Model)</div>
+        <div class="detail-chart-container" style="height:220px;"><canvas id="detail-importance-chart"></canvas></div>
+      </div>
+
+      <!-- Model Metrics -->
+      <div class="panel-section">
+        <div class="panel-section-title">Model Performance Comparison</div>
+        <div class="model-metrics-grid"></div>
+      </div>
+
+      <!-- Apply Button -->
+      <div class="panel-section" style="text-align:center; padding-top:8px;">
+        <button class="btn btn-primary detail-apply-btn" style="min-width:280px; padding:14px 32px; font-size:0.95rem;">
+          🔒 Shadow Mode (View Only)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Scripts (order matters) -->
+  <script src="js/data.js"></script>
+  <script src="js/models.js"></script>
+  <script src="js/optimizer.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
