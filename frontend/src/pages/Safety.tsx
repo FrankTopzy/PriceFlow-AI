@@ -116,7 +116,7 @@ export default function Safety() {
             <h3 className="font-semibold">Price Change Audit Log</h3>
           </div>
           <div className="flex-1 overflow-x-auto">
-            <table className="w-full text-left text-sm">
+            <table className="w-[1000px] text-left text-sm">
               <thead className="text-text-secondary bg-surface/50 border-b border-border">
                 <tr>
                   <th className="px-6 py-4 font-medium">Date & Time</th>
@@ -138,8 +138,8 @@ export default function Safety() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-text-secondary">{log.reason}</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                    <td className="px-2 py-4">
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium w-fit ${
                         log.status === 'Applied' 
                           ? 'bg-accent-success/10 text-accent-success border border-accent-success/20' 
                           : 'bg-accent-danger/10 text-accent-danger border border-accent-danger/20'
