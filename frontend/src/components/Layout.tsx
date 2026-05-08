@@ -41,9 +41,9 @@ export default function Layout() {
             <div className="p-2 bg-primary/20 rounded-lg text-primary">
               <Zap size={24} className="animate-pulse-glow" />
             </div>
-            <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+            <Link to={'/'} className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
               PriceFlow AI
-            </h1>
+            </Link>
           </div>
           <button 
             className="lg:hidden text-text-secondary hover:text-text-primary"
