@@ -205,27 +205,27 @@ def generate_and_save_datasets(output_dir: str = None):
     # Product catalog
     catalog = generate_product_catalog()
     catalog.to_csv(os.path.join(output_dir, "products.csv"), index=False)
-    print(f"✅ Saved products.csv ({len(catalog)} products)")
+    print(f"[SUCCESS] Saved products.csv ({len(catalog)} products)")
 
     # Transaction history
     history = generate_transaction_history(days=90)
     history.to_csv(os.path.join(output_dir, "transactions.csv"), index=False)
-    print(f"✅ Saved transactions.csv ({len(history)} records)")
+    print(f"[SUCCESS] Saved transactions.csv ({len(history)} records)")
 
     # Engineered features
     features = engineer_features(history)
     features.to_csv(os.path.join(output_dir, "features.csv"), index=False)
-    print(f"✅ Saved features.csv ({len(features)} records, {len(features.columns)} columns)")
+    print(f"[SUCCESS] Saved features.csv ({len(features)} records, {len(features.columns)} columns)")
 
     # Holiday calendar
     holidays_df = pd.DataFrame(HOLIDAYS)
     holidays_df.to_csv(os.path.join(output_dir, "holidays.csv"), index=False)
-    print(f"✅ Saved holidays.csv ({len(holidays_df)} holidays)")
+    print(f"[SUCCESS] Saved holidays.csv ({len(holidays_df)} holidays)")
 
     # Categories
     categories_df = pd.DataFrame(CATEGORIES)
     categories_df.to_csv(os.path.join(output_dir, "categories.csv"), index=False)
-    print(f"✅ Saved categories.csv ({len(categories_df)} categories)")
+    print(f"[SUCCESS] Saved categories.csv ({len(categories_df)} categories)")
 
     return catalog, history, features
 
