@@ -53,9 +53,37 @@ export default function Predict() {
       // Simulate API call to prediction endpoint
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Calculate a realistic-looking optimal price based on inputs
+      // Deterministic simulation based on inputs
       const basePrice = Number(formData.current_price) || 0;
-      const optimal = basePrice * (1 + (Math.random() * 0.1 - 0.05));
+      const compPrice = Number(formData.competitor_price) || basePrice;
+      const rating = Number(formData.customer_rating) || 4.0;
+      const stock = Number(formData.stock_level) || 100;
+      const demand = Number(formData.demand_last_week) || 100;
+      const marketing = Number(formData.marketing_spend) || 0;
+
+      let adjustment = 0;
+
+      // 1. Competitor Pricing Gravity
+      const compRatio = compPrice / (basePrice || 1);
+      adjustment += Math.max(-0.08, Math.min(0.08, (compRatio - 1) * 0.6));
+
+      // 2. Stock vs Demand Pressure
+      const stockToDemand = stock / (demand || 1);
+      if (stockToDemand < 1.0) adjustment += 0.04;
+      if (stockToDemand < 0.5) adjustment += 0.06;
+      if (stockToDemand > 3.0) adjustment -= 0.05;
+
+      // 3. Customer Rating Premium
+      adjustment += (rating - 4.0) * 0.025;
+
+      // 4. Marketing Boost
+      if (marketing > 1000) adjustment += 0.02;
+
+      // 5. Seasonality
+      if (formData.season === 'festival') adjustment += 0.08;
+      else if (formData.season === 'winter') adjustment += 0.02;
+
+      const optimal = basePrice * (1 + adjustment);
       setPrediction(optimal);
     } catch (err) {
       console.error(err);
