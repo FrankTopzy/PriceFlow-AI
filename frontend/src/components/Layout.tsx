@@ -76,7 +76,21 @@ export default function Layout() {
           })}
         </nav>
 
-        <div className="mt-auto pt-6 border-t border-border">
+        <div className="mt-auto pt-6 border-t border-border flex flex-col gap-4">
+          {/* Mobile Currency Selector */}
+          <div className="sm:hidden flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2">
+            <Globe size={16} className="text-text-secondary" />
+            <select 
+              value={currencyCode} 
+              onChange={(e) => setCurrencyCode(e.target.value as CurrencyCode)}
+              className="bg-transparent text-sm text-text-primary focus:outline-none w-full"
+            >
+              {Object.values(CURRENCIES).map(c => (
+                <option key={c.code} value={c.code} className="bg-surface">{c.code} ({c.symbol})</option>
+              ))}
+            </select>
+          </div>
+
           <div className="text-sm text-text-secondary">
             <div className="flex items-center justify-between mb-2">
               <span>Status</span>
@@ -85,9 +99,12 @@ export default function Layout() {
                 Online
               </span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface border border-border">
-              <span className="w-2 h-2 rounded-full bg-accent-success animate-pulse"></span>
-              <span className="text-xs font-medium text-text-primary">Shadow</span>
+            <div className="flex items-center justify-between">
+              <span>Mode</span>
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-surface border border-border">
+                <span className="w-2 h-2 rounded-full bg-accent-success animate-pulse"></span>
+                <span className="text-xs font-medium text-text-primary">Shadow</span>
+              </div>
             </div>
           </div>
         </div>
@@ -136,12 +153,12 @@ export default function Layout() {
                 setTimeout(() => setIsGlobalOptimizing(false), 2000);
               }}
               disabled={isGlobalOptimizing}
-              className="px-4 py-2 bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-white text-sm font-medium rounded-lg transition-colors shadow-[0_0_15px_rgba(59,130,246,0.3)] flex items-center gap-2"
+              className="px-3 sm:px-4 py-2 bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-white text-sm font-medium rounded-lg transition-colors shadow-[0_0_15px_rgba(59,130,246,0.3)] flex items-center gap-2"
             >
               {isGlobalOptimizing ? (
-                <><span className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></span> Running...</>
+                <><span className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></span> <span className="hidden sm:inline">Running...</span></>
               ) : (
-                "Run Global Optimization"
+                <><span className="hidden sm:inline">Run Global Optimization</span><span className="sm:hidden">Optimize</span></>
               )}
             </button>
           </div>
