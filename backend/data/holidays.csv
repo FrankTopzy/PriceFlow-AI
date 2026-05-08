@@ -1,0 +1,10 @@
+month,day,name,boost
+1,1,New Year,0.15
+2,14,Valentines Day,0.2
+4,15,Easter,0.1
+5,12,Mothers Day,0.18
+6,15,Summer Sale,0.25
+10,31,Halloween,0.12
+11,25,Black Friday,0.4
+11,28,Cyber Monday,0.35
+12,25,Christmas,0.3
