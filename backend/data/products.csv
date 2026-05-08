@@ -1,0 +1,21 @@
+id,name,category,cost,base_price,msrp,elasticity,brand
+E001,Wireless Earbuds Pro,Electronics,18,49.99,79.99,-2.1,SoundCore
+E002,Smart Watch Ultra,Electronics,85,199.99,299.99,-1.8,TechFit
+E003,Portable Charger 20K,Electronics,12,34.99,49.99,-2.5,PowerMax
+E004,Bluetooth Speaker,Electronics,22,59.99,89.99,-1.9,SoundCore
+E005,USB-C Hub 7-in-1,Electronics,15,39.99,59.99,-1.6,ConnectPro
+F001,Premium Hoodie,Fashion,14,54.99,79.99,-2.3,UrbanThread
+F002,Running Sneakers V2,Fashion,28,89.99,129.99,-1.7,StrideFlex
+F003,Leather Crossbody Bag,Fashion,20,64.99,99.99,-1.5,CraftLeather
+F004,Aviator Sunglasses,Fashion,8,29.99,49.99,-2.8,ShadeCraft
+F005,Slim Fit Chinos,Fashion,16,49.99,69.99,-2.0,UrbanThread
+H001,Scented Candle Set,Home & Living,6,24.99,39.99,-3.0,GlowHaus
+H002,Memory Foam Pillow,Home & Living,12,44.99,64.99,-1.9,DreamRest
+H003,Plant Grow Light,Home & Living,10,29.99,44.99,-2.2,GreenGlow
+H004,Ceramic Dinner Set,Home & Living,25,79.99,119.99,-1.4,ArtisanHome
+H005,Essential Oil Diffuser,Home & Living,9,34.99,54.99,-2.4,GlowHaus
+D001,Artisan Coffee Beans 1kg,Food & Beverage,8,22.99,34.99,-1.3,BeanCraft
+D002,Organic Matcha Powder,Food & Beverage,10,29.99,44.99,-1.6,ZenLeaf
+D003,Protein Bar Box (12pk),Food & Beverage,7,19.99,29.99,-2.6,FuelBar
+D004,Hot Sauce Collection,Food & Beverage,5,16.99,24.99,-2.9,FireKitchen
+D005,Trail Mix Premium 500g,Food & Beverage,4,12.99,19.99,-3.2,NutHarvest
