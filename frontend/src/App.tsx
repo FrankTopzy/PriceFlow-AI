@@ -2,9 +2,9 @@ import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 // We will create these pages next
 import Dashboard from './pages/Dashboard';
-import Products from './pages/Products';
-import Simulation from './pages/Simulation';
-import Safety from './pages/Safety';
+import Products from './pages/Products.tsx';
+import Simulation from './pages/Simulation.tsx';
+import Safety from './pages/Safety.tsx';
 import Predict from './pages/Predict.tsx';
 
 function App() {
