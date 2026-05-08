@@ -12,7 +12,7 @@ export const CURRENCIES: Record<CurrencyCode, Currency> = {
   USD: { code: 'USD', symbol: '$', rate: 1.0 },
   EUR: { code: 'EUR', symbol: '€', rate: 0.92 },
   GBP: { code: 'GBP', symbol: '£', rate: 0.79 },
-  NGN: { code: 'NGN', symbol: '₦', rate: 1150.0 }, // Mock conversion rate
+  NGN: { code: 'NGN', symbol: '₦', rate: 1350.0 }, // Mock conversion rate
 };
 
 interface CurrencyContextType {
