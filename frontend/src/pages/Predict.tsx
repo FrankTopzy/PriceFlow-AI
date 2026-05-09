@@ -6,19 +6,24 @@ export default function Predict() {
   const [file, setFile] = useState<File | null>(null);
   const [isPredicting, setIsPredicting] = useState(false);
   const [prediction, setPrediction] = useState<number | null>(null);
+  const [profitStatus, setProfitStatus] = useState<number | null>(null);
+  const [profitOnSold, setProfitOnSold] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const { formatPrice, currency } = useCurrency();
   
   // Form state
   const [formData, setFormData] = useState({
     current_price: 150.00,
+    unit_cost: 120.00,
     competitor_price: 145.00,
     demand_last_week: 320,
     stock_level: 500,
-    marketing_spend: 2000,
+    marketing_spend: 1000,
     season: 'monsoon',
     day_of_week: 'monday',
     customer_rating: 4.2,
-    units_sold: 250
+    initial_stock: 1000,
+    units_already_sold: 250
   });
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +54,24 @@ export default function Predict() {
   const handlePredict = async () => {
     setIsPredicting(true);
     setPrediction(null);
+    setProfitStatus(null);
+    setProfitOnSold(null);
+    setError(null);
     try {
+      if (file) {
+        if (!file.name.endsWith('.csv') && file.type !== 'text/csv') {
+          throw new Error('Invalid file type. Please upload a valid CSV dataset.');
+        }
+        
+        const text = await file.text();
+        const headers = text.split('\n')[0]?.toLowerCase() || '';
+        
+        // Simple heuristic to check if it's a pricing dataset
+        if (!headers.includes('price') && !headers.includes('demand') && !headers.includes('stock')) {
+          throw new Error('Invalid dataset format. Missing required columns (e.g., price, demand).');
+        }
+      }
+
       // Simulate API call to prediction endpoint
       await new Promise(resolve => setTimeout(resolve, 1500));
       
@@ -60,6 +82,20 @@ export default function Predict() {
       const stock = Number(formData.stock_level) || 100;
       const demand = Number(formData.demand_last_week) || 100;
       const marketing = Number(formData.marketing_spend) || 0;
+      
+      const initialStock = Number(formData.initial_stock) || 0;
+      const unitsSold = Number(formData.units_already_sold) || 0;
+      const unitCost = Number(formData.unit_cost) || 0;
+
+      // Calculate overall profit/loss
+      const totalRevenue = unitsSold * basePrice;
+      const totalCost = (initialStock * unitCost) + marketing;
+      const profit = totalRevenue - totalCost;
+      setProfitStatus(profit);
+
+      // Calculate profit specifically on units sold
+      const profitFromSold = (unitsSold * basePrice) - (unitsSold * unitCost);
+      setProfitOnSold(profitFromSold);
 
       let adjustment = 0;
 
@@ -85,8 +121,9 @@ export default function Predict() {
 
       const optimal = basePrice * (1 + adjustment);
       setPrediction(optimal);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setError(err.message || 'An error occurred during prediction.');
     } finally {
       setIsPredicting(false);
     }
@@ -110,6 +147,13 @@ export default function Predict() {
             </div>
           </div>
           
+          {error && (
+            <div className="mb-4 bg-accent-danger/10 border border-accent-danger/20 text-accent-danger px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+              <AlertCircle size={18} />
+              {error}
+            </div>
+          )}
+          
           <div className="border-2 border-dashed border-border rounded-xl p-8 flex flex-col items-center justify-center bg-surface/30 hover:bg-surface/50 transition-colors cursor-pointer group">
             {file ? (
               <div className="flex flex-col items-center text-accent-success">
@@ -132,6 +176,7 @@ export default function Predict() {
               onChange={(e) => {
                 if (e.target.files && e.target.files[0]) {
                   setFile(e.target.files[0]);
+                  setError(null); // Clear error on new file selection
                 }
               }}
             />
@@ -163,6 +208,16 @@ export default function Predict() {
                 type="number" 
                 name="current_price" 
                 value={formData.current_price ? Number((formData.current_price * currency.rate).toFixed(2)) : ''} 
+                onChange={handlePriceChange} 
+                className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-text-primary focus:border-primary outline-none" 
+              />
+            </div>
+            <div>
+              <label className="text-sm text-text-secondary block mb-1">Per Unit Cost (Buying Price) ({currency.symbol})</label>
+              <input 
+                type="number" 
+                name="unit_cost" 
+                value={formData.unit_cost ? Number((formData.unit_cost * currency.rate).toFixed(2)) : ''} 
                 onChange={handlePriceChange} 
                 className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-text-primary focus:border-primary outline-none" 
               />
@@ -221,8 +276,12 @@ export default function Predict() {
               <input type="number" name="customer_rating" step="0.1" value={formData.customer_rating} onChange={handleInputChange} className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-text-primary focus:border-primary outline-none" />
             </div>
             <div>
-              <label className="text-sm text-text-secondary block mb-1">Units Sold</label>
-              <input type="number" name="units_sold" value={formData.units_sold} onChange={handleInputChange} className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-text-primary focus:border-primary outline-none" />
+              <label className="text-sm text-text-secondary block mb-1">Initial Products Bought</label>
+              <input type="number" name="initial_stock" value={formData.initial_stock} onChange={handleInputChange} className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-text-primary focus:border-primary outline-none" />
+            </div>
+            <div>
+              <label className="text-sm text-text-secondary block mb-1">Units Already Sold</label>
+              <input type="number" name="units_already_sold" value={formData.units_already_sold} onChange={handleInputChange} className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-text-primary focus:border-primary outline-none" />
             </div>
           </div>
         </div>
@@ -242,9 +301,25 @@ export default function Predict() {
             <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary mb-2">
               {formatPrice(prediction)}
             </div>
-            <div className="text-xs font-medium text-accent-success bg-accent-success/10 px-3 py-1 rounded-full mt-4">
+            <div className="text-xs font-medium text-accent-success bg-accent-success/10 px-3 py-1 rounded-full mt-4 mb-4">
               Model Confidence: 94.2%
             </div>
+            {profitStatus !== null && profitOnSold !== null && (
+              <div className="w-full flex flex-col gap-2 mt-2">
+                <div className={`w-full bg-surface border rounded-lg p-3 text-sm text-center ${profitStatus >= 0 ? 'border-accent-success/30' : 'border-accent-danger/30'}`}>
+                  <span className="block text-text-secondary mb-1">Overall Financial Status</span>
+                  <span className={`font-bold text-lg ${profitStatus >= 0 ? 'text-accent-success' : 'text-accent-danger'}`}>
+                    {profitStatus >= 0 ? 'In Profit' : 'In Loss'} ({profitStatus >= 0 ? '+' : '-'}{formatPrice(Math.abs(profitStatus))})
+                  </span>
+                </div>
+                <div className={`w-full bg-surface border rounded-lg p-3 text-sm text-center ${profitOnSold >= 0 ? 'border-accent-success/30' : 'border-accent-danger/30'}`}>
+                  <span className="block text-text-secondary mb-1">Margin on Units Sold</span>
+                  <span className={`font-bold text-lg ${profitOnSold >= 0 ? 'text-accent-success' : 'text-accent-danger'}`}>
+                    {profitOnSold >= 0 ? 'Profit' : 'Loss'} ({profitOnSold >= 0 ? '+' : '-'}{formatPrice(Math.abs(profitOnSold))})
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex flex-col items-center text-center px-4">
