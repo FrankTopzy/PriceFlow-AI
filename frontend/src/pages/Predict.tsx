@@ -8,6 +8,7 @@ export default function Predict() {
   const [prediction, setPrediction] = useState<number | null>(null);
   const [profitStatus, setProfitStatus] = useState<number | null>(null);
   const [profitOnSold, setProfitOnSold] = useState<number | null>(null);
+  const [projectedProfit, setProjectedProfit] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { formatPrice, currency } = useCurrency();
   
@@ -56,6 +57,7 @@ export default function Predict() {
     setPrediction(null);
     setProfitStatus(null);
     setProfitOnSold(null);
+    setProjectedProfit(null);
     setError(null);
     try {
       if (file) {
@@ -121,6 +123,11 @@ export default function Predict() {
 
       const optimal = basePrice * (1 + adjustment);
       setPrediction(optimal);
+      
+      // Calculate projected profit on remaining stock at optimal price
+      const remainingStock = Math.max(0, initialStock - unitsSold);
+      const projectedProfitFromRemaining = remainingStock * (optimal - unitCost);
+      setProjectedProfit(projectedProfitFromRemaining);
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'An error occurred during prediction.');
@@ -304,7 +311,7 @@ export default function Predict() {
             <div className="text-xs font-medium text-accent-success bg-accent-success/10 px-3 py-1 rounded-full mt-4 mb-4">
               Model Confidence: 94.2%
             </div>
-            {profitStatus !== null && profitOnSold !== null && (
+            {profitStatus !== null && profitOnSold !== null && projectedProfit !== null && (
               <div className="w-full flex flex-col gap-2 mt-2">
                 <div className={`w-full bg-surface border rounded-lg p-3 text-sm text-center ${profitStatus >= 0 ? 'border-accent-success/30' : 'border-accent-danger/30'}`}>
                   <span className="block text-text-secondary mb-1">Overall Financial Status</span>
@@ -312,11 +319,19 @@ export default function Predict() {
                     {profitStatus >= 0 ? 'In Profit' : 'In Loss'} ({profitStatus >= 0 ? '+' : '-'}{formatPrice(Math.abs(profitStatus))})
                   </span>
                 </div>
-                <div className={`w-full bg-surface border rounded-lg p-3 text-sm text-center ${profitOnSold >= 0 ? 'border-accent-success/30' : 'border-accent-danger/30'}`}>
-                  <span className="block text-text-secondary mb-1">Margin on Units Sold</span>
-                  <span className={`font-bold text-lg ${profitOnSold >= 0 ? 'text-accent-success' : 'text-accent-danger'}`}>
-                    {profitOnSold >= 0 ? 'Profit' : 'Loss'} ({profitOnSold >= 0 ? '+' : '-'}{formatPrice(Math.abs(profitOnSold))})
-                  </span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className={`w-full bg-surface border rounded-lg p-3 text-sm text-center ${profitOnSold >= 0 ? 'border-accent-success/30' : 'border-accent-danger/30'}`}>
+                    <span className="block text-text-secondary mb-1">Margin (Units Sold)</span>
+                    <span className={`font-bold text-lg ${profitOnSold >= 0 ? 'text-accent-success' : 'text-accent-danger'}`}>
+                      {profitOnSold >= 0 ? '+' : '-'}{formatPrice(Math.abs(profitOnSold))}
+                    </span>
+                  </div>
+                  <div className={`w-full bg-surface border rounded-lg p-3 text-sm text-center ${projectedProfit >= 0 ? 'border-accent-success/30' : 'border-accent-danger/30'}`}>
+                    <span className="block text-text-secondary mb-1">Projected (Remaining)</span>
+                    <span className={`font-bold text-lg ${projectedProfit >= 0 ? 'text-accent-success' : 'text-accent-danger'}`}>
+                      {projectedProfit >= 0 ? '+' : '-'}{formatPrice(Math.abs(projectedProfit))}
+                    </span>
+                  </div>
                 </div>
               </div>
             )}
