@@ -8,7 +8,7 @@ export default function SalesPredict() {
   const [prediction, setPrediction] = useState<number | null>(null);
   const [advice, setAdvice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { formatPrice, currency } = useCurrency();
+  const { currency } = useCurrency();
   
   // Form state
   const [formData, setFormData] = useState({
