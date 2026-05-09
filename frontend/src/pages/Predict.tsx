@@ -9,6 +9,7 @@ export default function Predict() {
   const [profitStatus, setProfitStatus] = useState<number | null>(null);
   const [profitOnSold, setProfitOnSold] = useState<number | null>(null);
   const [projectedProfit, setProjectedProfit] = useState<number | null>(null);
+  const [advice, setAdvice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { formatPrice, currency } = useCurrency();
   
@@ -58,6 +59,7 @@ export default function Predict() {
     setProfitStatus(null);
     setProfitOnSold(null);
     setProjectedProfit(null);
+    setAdvice(null);
     setError(null);
     try {
       if (file) {
@@ -128,6 +130,22 @@ export default function Predict() {
       const remainingStock = Math.max(0, initialStock - unitsSold);
       const projectedProfitFromRemaining = remainingStock * (optimal - unitCost);
       setProjectedProfit(projectedProfitFromRemaining);
+
+      // Generate strategic advice
+      let generatedAdvice = '';
+      if (optimal < unitCost) {
+        generatedAdvice = 'Warning: The predicted optimal price is below your unit cost. You will incur a loss on every unit sold. Consider reducing your costs or repositioning your product.';
+      } else if (stockToDemand > 2.0 && optimal < basePrice) {
+        generatedAdvice = 'Your stock levels are high compared to recent demand. The model suggests a price cut to accelerate sales velocity and clear inventory.';
+      } else if (stockToDemand < 0.5 && optimal > basePrice) {
+        generatedAdvice = 'Demand is significantly outpacing your inventory. The model suggests raising prices to maximize margins on your limited remaining stock.';
+      } else if (optimal > compPrice * 1.1) {
+        generatedAdvice = 'The optimal price is noticeably higher than your competitor. Ensure your product offers premium value or superior customer ratings to justify the premium.';
+      } else {
+        generatedAdvice = 'Your pricing is well-balanced. Implement the predicted price to optimize your balance between sales volume and profit margin.';
+      }
+      setAdvice(generatedAdvice);
+
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'An error occurred during prediction.');
@@ -333,6 +351,14 @@ export default function Predict() {
                     </span>
                   </div>
                 </div>
+              </div>
+            )}
+            {advice && (
+              <div className="w-full bg-surface border border-primary/20 rounded-lg p-4 text-sm text-text-primary text-center mt-4 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                <span className="font-semibold text-primary flex items-center justify-center gap-2 mb-1">
+                  <TrendingUp size={16} /> Strategic Advice
+                </span>
+                {advice}
               </div>
             )}
           </div>
