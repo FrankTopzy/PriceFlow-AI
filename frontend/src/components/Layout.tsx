@@ -19,6 +19,7 @@ export default function Layout() {
     { path: '/products', label: 'Product Catalog', icon: Package },
     { path: '/simulation', label: 'Simulation Lab', icon: Beaker },
     { path: '/predict', label: 'Manual Predict', icon: Calculator },
+    { path: '/sales', label: 'Sales Forecast', icon: Calculator },
     { path: '/safety', label: 'Safety Rails', icon: ShieldAlert },
   ];
 
