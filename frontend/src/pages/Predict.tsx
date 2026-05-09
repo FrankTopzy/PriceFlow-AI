@@ -299,7 +299,7 @@ export default function Predict() {
         <h3 className="font-bold text-lg mb-8 w-full text-center border-b border-border pb-4">Optimal Price Prediction</h3>
         
         {prediction ? (
-          <div className="flex flex-col items-center animate-fade-in">
+          <div className="flex flex-col items-center animate-fade-in mb-6">
             <div className="w-32 h-32 rounded-full border-4 border-primary/20 flex items-center justify-center bg-primary/5 relative mb-6">
               <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-[spin_3s_linear_infinite]" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 50%, 0 50%)' }}></div>
               <TrendingUp size={48} className="text-primary" />
