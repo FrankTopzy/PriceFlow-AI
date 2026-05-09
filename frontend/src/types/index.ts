@@ -57,22 +57,30 @@ export interface KPI {
   change: number; // percentage change
 }
 
-export interface DashboardKPIs {
-  revenue: KPI;
-  profit: KPI;
-  margin: KPI;
-  active_optimizations: KPI;
+export interface KPIResponse {
+  total_optimized_revenue: number;
+  revenue_lift: number;
+  active_products: number;
+  avg_margin: number;
+  price_increases: number;
+  price_decreases: number;
+  unchanged: number;
 }
 
-export interface RevenueDataPoint {
+export interface RevenueChartPoint {
   date: string;
   revenue: number;
-  profit: number;
+}
+
+export interface RevenueChartResponse {
+  actual: RevenueChartPoint[];
+  optimized: RevenueChartPoint[];
 }
 
 export interface CategoryDataPoint {
-  category: string;
+  name: string;
   revenue: number;
+  color?: string;
 }
 
 export interface ModelMetrics {
