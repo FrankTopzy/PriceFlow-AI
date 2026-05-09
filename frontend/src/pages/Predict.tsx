@@ -319,7 +319,7 @@ export default function Predict() {
                     {profitStatus >= 0 ? 'In Profit' : 'In Loss'} ({profitStatus >= 0 ? '+' : '-'}{formatPrice(Math.abs(profitStatus))})
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2">
                   <div className={`w-full bg-surface border rounded-lg p-3 text-sm text-center ${profitOnSold >= 0 ? 'border-accent-success/30' : 'border-accent-danger/30'}`}>
                     <span className="block text-text-secondary mb-1">Margin (Units Sold)</span>
                     <span className={`font-bold text-lg ${profitOnSold >= 0 ? 'text-accent-success' : 'text-accent-danger'}`}>
@@ -349,7 +349,7 @@ export default function Predict() {
           className="mt-auto w-full py-3 bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
         >
           {isPredicting ? (
-            <><span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span> Computing...</>
+            <><span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white;"></span> Computing...</>
           ) : (
             "Predict Optimal Price"
           )}
