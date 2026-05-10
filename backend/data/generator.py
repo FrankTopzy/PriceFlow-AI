@@ -200,32 +200,40 @@ def generate_and_save_datasets(output_dir: str = None):
     if output_dir is None:
         output_dir = os.path.dirname(os.path.abspath(__file__))
 
-    os.makedirs(output_dir, exist_ok=True)
+    try:
+        os.makedirs(output_dir, exist_ok=True)
 
-    # Product catalog
-    catalog = generate_product_catalog()
-    catalog.to_csv(os.path.join(output_dir, "products.csv"), index=False)
-    print(f"[SUCCESS] Saved products.csv ({len(catalog)} products)")
+        # Product catalog
+        catalog = generate_product_catalog()
+        catalog.to_csv(os.path.join(output_dir, "products.csv"), index=False)
+        print(f"[SUCCESS] Saved products.csv ({len(catalog)} products)")
 
-    # Transaction history
-    history = generate_transaction_history(days=90)
-    history.to_csv(os.path.join(output_dir, "transactions.csv"), index=False)
-    print(f"[SUCCESS] Saved transactions.csv ({len(history)} records)")
+        # Transaction history
+        history = generate_transaction_history(days=90)
+        history.to_csv(os.path.join(output_dir, "transactions.csv"), index=False)
+        print(f"[SUCCESS] Saved transactions.csv ({len(history)} records)")
 
-    # Engineered features
-    features = engineer_features(history)
-    features.to_csv(os.path.join(output_dir, "features.csv"), index=False)
-    print(f"[SUCCESS] Saved features.csv ({len(features)} records, {len(features.columns)} columns)")
+        # Engineered features
+        features = engineer_features(history)
+        features.to_csv(os.path.join(output_dir, "features.csv"), index=False)
+        print(f"[SUCCESS] Saved features.csv ({len(features)} records, {len(features.columns)} columns)")
 
-    # Holiday calendar
-    holidays_df = pd.DataFrame(HOLIDAYS)
-    holidays_df.to_csv(os.path.join(output_dir, "holidays.csv"), index=False)
-    print(f"[SUCCESS] Saved holidays.csv ({len(holidays_df)} holidays)")
+        # Holiday calendar
+        holidays_df = pd.DataFrame(HOLIDAYS)
+        holidays_df.to_csv(os.path.join(output_dir, "holidays.csv"), index=False)
+        print(f"[SUCCESS] Saved holidays.csv ({len(holidays_df)} holidays)")
 
-    # Categories
-    categories_df = pd.DataFrame(CATEGORIES)
-    categories_df.to_csv(os.path.join(output_dir, "categories.csv"), index=False)
-    print(f"[SUCCESS] Saved categories.csv ({len(categories_df)} categories)")
+        # Categories
+        categories_df = pd.DataFrame(CATEGORIES)
+        categories_df.to_csv(os.path.join(output_dir, "categories.csv"), index=False)
+        print(f"[SUCCESS] Saved categories.csv ({len(categories_df)} categories)")
+    except (OSError, IOError) as e:
+        print(f"[WARNING] Read-only filesystem detected or permission denied: {e}")
+        print("Backend will continue using in-memory datasets generated during this session.")
+        # Ensure we still have the core data for the return statement
+        catalog = generate_product_catalog()
+        history = generate_transaction_history(days=90)
+        features = engineer_features(history)
 
     return catalog, history, features
 
