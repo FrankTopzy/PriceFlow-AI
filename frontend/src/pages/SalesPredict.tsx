@@ -18,7 +18,7 @@ export default function SalesPredict() {
     last_week_sales: 200,
     available_stock: 1500,
     products_sold: 500,
-    revenue_generated: this.currentPrice * this.products_sold,
+    revenue_generated: 150.00 * 500,
     marketing_spend: 6000,
     store_traffic: 100,
     season: 'monsoon',
