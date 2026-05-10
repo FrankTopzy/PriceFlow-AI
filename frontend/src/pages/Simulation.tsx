@@ -5,6 +5,7 @@ import {
   ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis,
 } from 'recharts';
 import { useCurrency } from '../context/CurrencyContext';
+import { useProducts } from '../context/ProductContext';
 import { api } from '../api/client';
 import type { CatalogProduct, OptimizationResult } from '../types';
 
@@ -28,24 +29,22 @@ const DEFAULT_SCENARIO: ScenarioParams = {
 };
 
 export default function Simulation() {
-  const [products, setProducts] = useState<CatalogProduct[]>([]);
+  const { products, setProductOptimization, loading: productsLoading } = useProducts();
   const [selectedId, setSelectedId] = useState<string>('');
   const [params, setParams] = useState<ScenarioParams>(DEFAULT_SCENARIO);
   const [loading, setLoading] = useState(false);
-  const [productsLoading, setProductsLoading] = useState(true);
   const [result, setResult] = useState<OptimizationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [usingFallback, setUsingFallback] = useState(false);
 
   const { formatPrice, currency } = useCurrency();
 
-  // Load product list
+  // Set initial selection
   useEffect(() => {
-    api.getProducts()
-      .then((data) => { setProducts(data); if (data.length) setSelectedId(data[0].id); })
-      .catch(() => { setUsingFallback(true); })
-      .finally(() => setProductsLoading(false));
-  }, []);
+    if (products.length > 0 && !selectedId) {
+      setSelectedId(products[0].id);
+    }
+  }, [products, selectedId]);
 
   const selectedProduct = products.find((p) => p.id === selectedId);
 
@@ -65,13 +64,14 @@ export default function Simulation() {
         demand_lag_7d: params.demand_lag_7d,
       });
       setResult(res);
+      setProductOptimization(selectedId, res);
     } catch (e: any) {
       // Graceful fallback for when API is offline
       if (selectedProduct) {
         const base = selectedProduct.current_price;
         const lift = params.is_weekend ? 1.12 : params.holiday_boost > 0 ? 1.15 : 1.07;
         const demand = params.demand_lag_7d * (params.stock_level === 'low' ? 1.2 : 1.0);
-        setResult({
+        const mockRes: OptimizationResult = {
           product_id: selectedId,
           current_price: base,
           suggested_price: Math.round(base * lift * 100) / 100,
@@ -89,7 +89,9 @@ export default function Simulation() {
           is_locked: false,
           can_apply: true,
           rollout_mode: 'shadow',
-        });
+        };
+        setResult(mockRes);
+        setProductOptimization(selectedId, mockRes);
         setUsingFallback(true);
       } else {
         setError(e.message || 'Simulation failed');
