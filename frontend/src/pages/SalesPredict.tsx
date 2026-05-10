@@ -172,7 +172,7 @@ export default function SalesPredict() {
             </div>
           )}
           
-          <div className="border-2 border-dashed border-border rounded-xl p-8 flex flex-col items-center justify-center bg-surface/30 hover:bg-surface/50 transition-colors cursor-pointer group">
+          <div className="relative border-2 border-dashed border-border rounded-xl p-8 flex flex-col items-center justify-center bg-surface/30 hover:bg-surface/50 transition-colors cursor-pointer group">
             {file ? (
               <div className="flex flex-col items-center text-accent-success">
                 <File size={40} className="mb-2" />
