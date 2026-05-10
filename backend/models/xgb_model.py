@@ -76,7 +76,7 @@ class XGBoostDemandModel:
         )
 
         self.is_trained = True
-        print(f"🌲 XGBoost model trained — R²={self.metrics['r2']}, MAE={self.metrics['mae']}, MAPE={self.metrics['mape']}%")
+        print(f"XGBoost model trained — R²={self.metrics['r2']}, MAE={self.metrics['mae']}, MAPE={self.metrics['mape']}%")
 
     def predict(self, features: dict) -> dict:
         """Predict demand for given features."""
