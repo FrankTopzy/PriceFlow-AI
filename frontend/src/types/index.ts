@@ -11,6 +11,7 @@ export interface Product {
   competitor_price: number | null;
   stock_level: number;
   cost: number;
+  image?: string;
 }
 
 export interface TransactionHistory {
@@ -41,6 +42,7 @@ export interface CatalogProduct {
   brand: string;
   current_price: number;
   current_stock: number;
+  image?: string;
 }
 
 // ─── Optimization ─────────────────────────────────────────────────────────────
