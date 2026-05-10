@@ -4,7 +4,9 @@ import type { CatalogProduct, OptimizationResult, TransactionHistory } from '../
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { X, Search, SlidersHorizontal, RefreshCw, ArrowLeft } from 'lucide-react';
 import { useCurrency } from '../context/CurrencyContext';
+import { useProducts } from '../context/ProductContext';
 import { api } from '../api/client';
+import { deriveOptimalPrice } from '../api/utils';
 
 // ── Fallback mock products ────────────────────────────────────────────────────
 const MOCK_PRODUCTS: CatalogProduct[] = Array.from({ length: 12 }).map((_, i) => {
@@ -26,9 +28,9 @@ const MOCK_PRODUCTS: CatalogProduct[] = Array.from({ length: 12 }).map((_, i) =>
     current_price: 140 + i * 10,
     current_stock: Math.max(15, 200 - i * 12),
     image: `https://images.unsplash.com/photo-${[
-      '1590658268037-6bf12165a8df', '1544117518-2b041580c79d', '1609091839311-d536819bc248', '1608156639585-b3a034ef9199',
+      '1590658268037-6bf12165a8df', '1508130149457-3ec52424826c', '1612444315754-409702c48707', '1545454658-2e8bc11b483f',
       '1556821840-3a63f95609a7', '1542291026-7eec264c27ff', '1548036328-c9fa89d128fa', '1572635196237-14b3f281503f',
-      '1602874801007-bd458bb1b8b6', '1595191830227-705777799c39', '1509423350716-97f9360b4e5f', '1577113310929-212b130fca6a'
+      '1631679010307-dc298106ec14', '1594857492781-6fca81122a2e', '1581428982868-e410dd048a90', '1598463994503-4f114115456f'
     ][i % 12]}?w=800&q=80`
   };
 });
@@ -50,9 +52,7 @@ function mockHistory(p: CatalogProduct, days = 14): TransactionHistory[] {
 }
 
 export default function Products() {
-  const [products, setProducts] = useState<CatalogProduct[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [usingFallback, setUsingFallback] = useState(false);
+  const { products, updateProductPrice, setProductOptimization, loading, usingFallback } = useProducts();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
 
@@ -64,14 +64,6 @@ export default function Products() {
   const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
 
   const { formatPrice } = useCurrency();
-
-  // Load products
-  useEffect(() => {
-    api.getProducts()
-      .then((data) => { setProducts(data); setUsingFallback(false); })
-      .catch(() => { setProducts(MOCK_PRODUCTS); setUsingFallback(true); })
-      .finally(() => setLoading(false));
-  }, []);
 
   const categories = useMemo(() => {
     const cats = [...new Set(products.map((p) => p.category))].sort();
@@ -103,15 +95,26 @@ export default function Products() {
 
   const handleOptimize = async () => {
     if (!selectedProduct) return;
+    
+    // Flow: Current price becomes previous optimal, new optimal is fetched
+    const previousOptimal = optimizationResult 
+      ? optimizationResult.suggested_price 
+      : deriveOptimalPrice(selectedProduct);
+
+    // Update local state for immediate feedback
+    updateProductPrice(selectedProduct.id, previousOptimal);
+    setSelectedProduct((prev) => prev ? { ...prev, current_price: previousOptimal } : prev);
+
     setIsOptimizing(true);
     setOptimizationResult(null);
     try {
       const result = await api.optimizeSingle(selectedProduct.id);
       setOptimizationResult(result);
+      setProductOptimization(selectedProduct.id, result);
     } catch {
-      // fallback mock
-      const basePrice = selectedProduct.current_price;
-      setOptimizationResult({
+      // fallback mock using the updated current price
+      const basePrice = previousOptimal;
+      const mockRes: OptimizationResult = {
         product_id: selectedProduct.id,
         current_price: basePrice,
         suggested_price: Math.round(basePrice * 1.07 * 100) / 100,
@@ -129,7 +132,9 @@ export default function Products() {
         is_locked: false,
         can_apply: true,
         rollout_mode: 'shadow',
-      });
+      };
+      setOptimizationResult(mockRes);
+      setProductOptimization(selectedProduct.id, mockRes);
     } finally {
       setIsOptimizing(false);
     }
@@ -138,14 +143,10 @@ export default function Products() {
   const handleApplyPrice = async () => {
     if (!selectedProduct || !optimizationResult) return;
     try {
-      await api.applyPrice(selectedProduct.id, optimizationResult.suggested_price, 'Applied from Products page');
-      // Update local state
-      setProducts((prev) =>
-        prev.map((p) =>
-          p.id === selectedProduct.id ? { ...p, current_price: optimizationResult.suggested_price } : p
-        )
-      );
-      setSelectedProduct((prev) => prev ? { ...prev, current_price: optimizationResult.suggested_price } : prev);
+      const price = optimizationResult.suggested_price;
+      await api.applyPrice(selectedProduct.id, price, 'Applied from Products page');
+      updateProductPrice(selectedProduct.id, price);
+      setSelectedProduct((prev) => prev ? { ...prev, current_price: price } : prev);
       setOptimizationResult(null);
     } catch (e) {
       console.error('Apply price failed', e);
