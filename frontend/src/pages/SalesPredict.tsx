@@ -137,7 +137,20 @@ export default function SalesPredict() {
       } else {
         generatedAdvice = 'Your pricing and marketing strategies are highly competitive. Maintain these levels to maximize margins.';
       }
-      setAdvice(generatedAdvice);
+
+      // Investment Verdict Logic
+      const marketingEfficiency = revenueGenerated > 0 ? marketing / revenueGenerated : 0;
+      let investmentVerdict = '';
+
+      if (estimatedSales > (lastWeekSales * 1.2) && marketingEfficiency < 0.25) {
+        investmentVerdict = ' 💰 INVESTMENT VERDICT: High Potential. Strong predicted growth and high marketing efficiency suggest this is a prime product for further investment.';
+      } else if (marketingEfficiency > 0.5 && estimatedSales < lastWeekSales) {
+        investmentVerdict = ' ⚠️ INVESTMENT VERDICT: High Risk. Your marketing spend is high relative to declining sales. Re-evaluate your ad strategy before committing more capital.';
+      } else {
+        investmentVerdict = ' 📊 INVESTMENT VERDICT: Neutral. The product is performing within expected ranges. Continue monitoring sales velocity before scaling investment.';
+      }
+
+      setAdvice(generatedAdvice + investmentVerdict);
       setPrediction(Math.round(estimatedSales));
     } catch (err: any) {
       console.error(err);
