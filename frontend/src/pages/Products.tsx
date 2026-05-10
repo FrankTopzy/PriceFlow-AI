@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import ProductCard from '../components/ProductCard';
 import type { CatalogProduct, OptimizationResult, TransactionHistory } from '../types';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { X, Search, SlidersHorizontal, RefreshCw } from 'lucide-react';
+import { X, Search, SlidersHorizontal, RefreshCw, ArrowLeft } from 'lucide-react';
 import { useCurrency } from '../context/CurrencyContext';
 import { api } from '../api/client';
 
@@ -216,9 +216,9 @@ export default function Products() {
         </div>
       </div>
 
-      {/* Slide-in Detail Panel */}
+      {/* Detail Panel */}
       {selectedProduct && (
-        <div className="w-full lg:w-[380px] shrink-0 glass-panel border border-border rounded-xl flex flex-col animate-fade-in overflow-hidden absolute lg:static inset-0 z-20 lg:z-auto">
+        <div className="w-full lg:w-[380px] shrink-0 glass-panel border border-border rounded-xl flex flex-col animate-fade-in overflow-hidden relative lg:static z-20 lg:z-auto min-h-[500px]">
           {/* Header */}
           <div className="p-5 border-b border-border flex justify-between items-start">
             <div>
@@ -226,10 +226,12 @@ export default function Products() {
               <span className="text-xs text-text-secondary">{selectedProduct.category} · {selectedProduct.id}</span>
             </div>
             <button
-              onClick={() => { setSelectedProduct(null); setOptimizationResult(null); }}
-              className="p-1.5 rounded-lg hover:bg-surface text-text-secondary hover:text-text-primary transition-colors"
+              onClick={() => { setSelectedProduct(null); setOptimizationResult(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className="p-1.5 rounded-lg hover:bg-surface text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1"
             >
-              <X size={18} />
+              <ArrowLeft size={18} className="lg:hidden" />
+              <span className="text-xs font-medium lg:hidden mr-1">Back</span>
+              <X size={18} className="hidden lg:block" />
             </button>
           </div>
 
