@@ -164,7 +164,7 @@ export default function Products() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-8rem)] relative overflow-hidden">
+    <div className="flex flex-col lg:flex-row gap-6 lg:h-[calc(100vh-8rem)] relative lg:overflow-hidden">
       {/* Main Grid */}
       <div className={`flex flex-col flex-1 min-w-0 transition-all duration-300 ${selectedProduct ? 'hidden lg:flex' : 'flex'}`}>
         {/* Header */}
