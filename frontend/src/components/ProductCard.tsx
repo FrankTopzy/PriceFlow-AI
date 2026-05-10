@@ -1,4 +1,4 @@
-import { Package, TrendingUp, TrendingDown, AlertTriangle, ArrowRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertTriangle, ArrowRight } from 'lucide-react';
 import type { CatalogProduct, Product } from '../types';
 import { useCurrency } from '../context/CurrencyContext';
 import { useProducts } from '../context/ProductContext';
