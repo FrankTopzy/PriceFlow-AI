@@ -158,7 +158,19 @@ body {
 .mover-item:hover { padding-left: 8px; }
 .mover-item:last-child { border-bottom: none; }
 .mover-info { display: flex; align-items: center; gap: 12px; }
-.mover-icon { font-size: 1.5rem; }
+.mover-img-container {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+.mover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .mover-name { font-weight: 600; font-size: 0.88rem; }
 .mover-price { font-size: 0.78rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
 .mover-impact { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.88rem; }
@@ -204,7 +216,26 @@ body {
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
 .product-name { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
-.product-brand { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 16px; }
+.product-brand { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px; }
+
+.product-image-container {
+  width: 100%;
+  height: 160px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+}
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.product-card:hover .product-image {
+  transform: scale(1.05);
+}
 
 .price-comparison { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 .price-label { display: block; font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
@@ -276,6 +307,20 @@ body.panel-open .panel-backdrop { opacity: 1; pointer-events: auto; }
 .detail-product-name { font-size: 1.3rem; font-weight: 700; }
 .detail-product-category { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
 .detail-product-brand { font-size: 0.78rem; color: var(--text-dim); }
+
+.detail-image-container {
+  width: 100%;
+  height: 240px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-top: 20px;
+  border: 1px solid var(--border);
+}
+.detail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
 .panel-body { padding: 24px 28px; }
 .panel-section { margin-bottom: 28px; }
