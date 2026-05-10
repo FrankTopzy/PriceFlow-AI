@@ -47,10 +47,10 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
     >
       <div className="flex justify-between items-start mb-4 gap-2">
         <div className="flex items-center gap-3 min-w-0 flex-1">
-          <div className="p-2 rounded-lg bg-surface border border-border group-hover:bg-primary/20 group-hover:text-primary transition-colors shrink-0">
-            <Package size={20} />
-          </div>
           <div className="min-w-0 flex-1">
+            <div className="product-img-container">
+              <img src={product.image} alt={product.name} className="product-img" loading="lazy" />
+            </div>
             <h4 className="font-semibold text-[15px] truncate text-text-primary" title={product.name}>
               {product.name}
             </h4>
