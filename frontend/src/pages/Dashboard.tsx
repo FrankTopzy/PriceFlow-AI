@@ -3,6 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { TrendingUp, DollarSign, Activity, Package, ArrowUpRight } from 'lucide-react';
 import type { RevenueChartResponse, CategoryDataPoint, BatchOptimizationResponse, CatalogProduct } from '../types';
 import { useCurrency } from '../context/CurrencyContext';
+import { useProducts } from '../context/ProductContext';
 import { api } from '../api/client';
 import ModelMetricsCard from '../components/ModelMetricsCard';
 
@@ -37,10 +38,10 @@ function fallbackBatch(summaryOverrides?: Partial<BatchOptimizationResponse['sum
 }
 
 export default function Dashboard() {
+  const { products: catalog, loading: productsLoading, usingFallback: productsFallback } = useProducts();
   const [batch, setBatch] = useState<BatchOptimizationResponse | null>(null);
   const [revenueMerged, setRevenueMerged] = useState<{ date: string; actual: number; optimized: number }[]>([]);
   const [categoryData, setCategoryData] = useState<CategoryDataPoint[]>([]);
-  const [catalog, setCatalog] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [usingFallback, setUsingFallback] = useState(false);
   const { formatPrice, currency } = useCurrency();
@@ -48,16 +49,14 @@ export default function Dashboard() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [opt, revChart, cats, products] = await Promise.all([
+        const [opt, revChart, cats] = await Promise.all([
           api.optimizeBatch(),
           api.getRevenueChart(),
           api.getCategories(),
-          api.getProducts(),
         ]);
         setBatch(opt);
         setRevenueMerged(mergeRevenueSeries(revChart));
         setCategoryData(cats);
-        setCatalog(products);
         setUsingFallback(false);
       } catch (e) {
         console.warn('Dashboard API unavailable, using fallback data:', e);
