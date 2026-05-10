@@ -106,6 +106,24 @@ class PriceApplyRequest(BaseModel):
     reason: Optional[str] = "Optimizer recommendation"
 
 
+class SalesPredictRequest(BaseModel):
+    item_weight: float
+    item_fat_content: str
+    item_visibility: float
+    item_type: str
+    item_mrp: float
+    outlet_establishment_year: int
+    outlet_size: str
+    outlet_location_type: str
+    outlet_type: str
+
+
+class SalesPredictResponse(BaseModel):
+    predicted_sales: float
+    confidence_score: float
+    advice: str
+
+
 class DemandCurvePoint(BaseModel):
     price: float
     demand: int
