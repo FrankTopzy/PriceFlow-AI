@@ -60,7 +60,7 @@ def startup():
     data_dir = os.path.join(os.path.dirname(__file__), "data")
 
     # Generate datasets
-    print("📦 Generating datasets...")
+    print("Generating datasets...")
     products_df, history_df, features_df = generate_and_save_datasets(data_dir)
 
     # Build products list with current prices and stock
@@ -81,7 +81,7 @@ def startup():
     optimizer = PriceOptimizer(trainer)
     optimizer.set_current_prices(products_list)
 
-    print(f"🚀 PriceFlow AI ready — {len(products_list)} products loaded")
+    print(f"PriceFlow AI ready — {len(products_list)} products loaded")
 
 
 # ─── Product Endpoints ───────────────────────────────────────────────────────
