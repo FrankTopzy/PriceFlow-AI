@@ -87,6 +87,13 @@ const UI = (() => {
     panel.querySelector('.detail-product-category').textContent = product.category.icon + ' ' + product.category.name;
     panel.querySelector('.detail-product-brand').textContent = product.brand;
 
+    // Image
+    const img = document.getElementById('detail-product-image');
+    if (img) {
+      img.src = product.image;
+      img.alt = product.name;
+    }
+
     // Pricing summary
     const elastLabel = DataEngine.getElasticityLabel(product.elasticity);
     panel.querySelector('.detail-current-price').textContent = '$' + product.currentPrice.toFixed(2);
