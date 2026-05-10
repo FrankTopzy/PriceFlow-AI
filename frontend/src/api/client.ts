@@ -1,15 +1,17 @@
 import type { 
-  Product, 
   ProductWithHistory, 
   OptimizationResult, 
-  SimulationRequest, 
   SimulationResult, 
-  DashboardKPIs, 
-  RevenueDataPoint, 
+  KPIResponse,
+  RevenueChartResponse,
   CategoryDataPoint, 
+  BatchOptimizationResponse,
+  CatalogProduct,
   ModelMetrics, 
   FeatureImportance,
-  TransactionHistory
+  TransactionHistory,
+  PriceLogEntry,
+  OptimizerConfig,
 } from '../types';
 
 const API_BASE = 'http://127.0.0.1:8000/api';
@@ -31,22 +33,22 @@ class ApiClient {
     return response.json();
   }
 
-  // Dashboard APIs
-  async getKPIs(): Promise<DashboardKPIs> {
-    return this.fetch<DashboardKPIs>('/dashboard/kpis');
+  // ── Dashboard ────────────────────────────────────────────────────────────
+  async getKPIs(): Promise<KPIResponse> {
+    return this.fetch<KPIResponse>('/dashboard/kpis');
   }
 
-  async getRevenueChart(): Promise<RevenueDataPoint[]> {
-    return this.fetch<RevenueDataPoint[]>('/dashboard/revenue-chart');
+  async getRevenueChart(): Promise<RevenueChartResponse> {
+    return this.fetch<RevenueChartResponse>('/dashboard/revenue-chart');
   }
 
   async getCategories(): Promise<CategoryDataPoint[]> {
     return this.fetch<CategoryDataPoint[]>('/dashboard/categories');
   }
 
-  // Product APIs
-  async getProducts(): Promise<Product[]> {
-    return this.fetch<Product[]>('/products');
+  // ── Products ─────────────────────────────────────────────────────────────
+  async getProducts(): Promise<CatalogProduct[]> {
+    return this.fetch<CatalogProduct[]>('/products');
   }
 
   async getProduct(id: string): Promise<ProductWithHistory> {
@@ -57,36 +59,70 @@ class ApiClient {
     return this.fetch<TransactionHistory[]>(`/products/${id}/history`);
   }
 
-  // Optimization & Simulation
-  async optimizeBatch(): Promise<OptimizationResult[]> {
-    return this.fetch<OptimizationResult[]>('/optimize', { method: 'POST' });
+  // ── Optimization ─────────────────────────────────────────────────────────
+  async optimizeBatch(): Promise<BatchOptimizationResponse> {
+    return this.fetch<BatchOptimizationResponse>('/optimize', { method: 'POST' });
   }
 
   async optimizeSingle(id: string): Promise<OptimizationResult> {
     return this.fetch<OptimizationResult>(`/optimize/${id}`, { method: 'POST' });
   }
 
-  async simulate(request: SimulationRequest): Promise<SimulationResult> {
-    return this.fetch<SimulationResult>('/simulate', {
+  // ── Simulation ───────────────────────────────────────────────────────────
+  /**
+   * Run a what-if scenario. Matches the backend SimulationRequest schema.
+   * All optional fields default server-side.
+   */
+  async simulate(req: {
+    product_id: string;
+    competitor_price?: number | null;
+    stock_level?: string | null;
+    is_weekend?: boolean;
+    holiday_boost?: number;
+    month?: number;
+    demand_lag_7d?: number;
+  }): Promise<OptimizationResult> {
+    return this.fetch<OptimizationResult>('/simulate', {
       method: 'POST',
-      body: JSON.stringify(request),
+      body: JSON.stringify(req),
     });
   }
 
-  async applyPrice(productId: string, newPrice: number): Promise<void> {
-    return this.fetch<void>('/price/apply', {
+  // ── Price Management ──────────────────────────────────────────────────────
+  async applyPrice(productId: string, newPrice: number, reason?: string): Promise<{ applied: boolean; message: string }> {
+    return this.fetch('/price/apply', {
       method: 'POST',
-      body: JSON.stringify({ product_id: productId, new_price: newPrice }),
+      body: JSON.stringify({ product_id: productId, new_price: newPrice, reason: reason ?? 'Manual override' }),
     });
   }
 
-  // ML Models APIs
-  async getModelMetrics(): Promise<ModelMetrics> {
-    return this.fetch<ModelMetrics>('/models/metrics');
+  async getPriceLog(): Promise<PriceLogEntry[]> {
+    return this.fetch<PriceLogEntry[]>('/price/log');
+  }
+
+  // ── Config ────────────────────────────────────────────────────────────────
+  async getConfig(): Promise<OptimizerConfig> {
+    return this.fetch<OptimizerConfig>('/config');
+  }
+
+  async updateConfig(updates: Partial<OptimizerConfig>): Promise<{ status: string; config: OptimizerConfig }> {
+    return this.fetch('/config', {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+  }
+
+  // ── ML Models ─────────────────────────────────────────────────────────────
+  async getModelMetrics(): Promise<ModelMetrics[]> {
+    return this.fetch<ModelMetrics[]>('/models/metrics');
   }
 
   async getFeatureImportance(productId: string): Promise<FeatureImportance[]> {
     return this.fetch<FeatureImportance[]>(`/models/${productId}/importance`);
+  }
+
+  async getDemandCurve(productId: string): Promise<{ price: number; demand: number; revenue: number }[]> {
+    return this.fetch(`/models/${productId}/demand-curve`);
   }
 }
 
