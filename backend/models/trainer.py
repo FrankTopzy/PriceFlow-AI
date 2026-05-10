@@ -20,6 +20,14 @@ class ModelTrainer:
 
     def train_all(self, features_df: pd.DataFrame):
         """Train both models on the engineered features DataFrame."""
+        if features_df is None or features_df.empty:
+            raise ValueError("Training Failed: Feature dataset is empty or missing.")
+        
+        # Ensure minimal required columns for ML
+        ml_req = {"log_price_ratio", "log_demand"}
+        if not ml_req.issubset(features_df.columns):
+            raise ValueError(f"Training Blocked: Dataset lacks required ML features {ml_req}")
+
         self.features_df = features_df
         print("Training models...")
         self.ridge.train(features_df)
