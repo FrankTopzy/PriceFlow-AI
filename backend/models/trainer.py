@@ -21,11 +21,11 @@ class ModelTrainer:
     def train_all(self, features_df: pd.DataFrame):
         """Train both models on the engineered features DataFrame."""
         self.features_df = features_df
-        print("🔧 Training models...")
+        print("Training models...")
         self.ridge.train(features_df)
         self.xgb.train(features_df)
         self.is_ready = True
-        print("✅ All models trained and ready")
+        print("All models trained and ready")
 
     def ensemble_predict(self, features: dict) -> dict:
         """Ensemble prediction: 60% XGBoost + 40% Ridge."""
