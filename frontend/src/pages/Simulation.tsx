@@ -7,7 +7,7 @@ import {
 import { useCurrency } from '../context/CurrencyContext';
 import { useProducts } from '../context/ProductContext';
 import { api } from '../api/client';
-import type { CatalogProduct, OptimizationResult } from '../types';
+import type { OptimizationResult } from '../types';
 
 // ── Scenario defaults ─────────────────────────────────────────────────────────
 interface ScenarioParams {

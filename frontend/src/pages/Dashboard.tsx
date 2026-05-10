@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { TrendingUp, DollarSign, Activity, Package, ArrowUpRight } from 'lucide-react';
-import type { RevenueChartResponse, CategoryDataPoint, BatchOptimizationResponse, CatalogProduct } from '../types';
+import type { RevenueChartResponse, CategoryDataPoint, BatchOptimizationResponse } from '../types';
 import { useCurrency } from '../context/CurrencyContext';
 import { useProducts } from '../context/ProductContext';
 import { api } from '../api/client';
@@ -38,7 +38,7 @@ function fallbackBatch(summaryOverrides?: Partial<BatchOptimizationResponse['sum
 }
 
 export default function Dashboard() {
-  const { products: catalog, loading: productsLoading, usingFallback: productsFallback } = useProducts();
+  const { products: catalog } = useProducts();
   const [batch, setBatch] = useState<BatchOptimizationResponse | null>(null);
   const [revenueMerged, setRevenueMerged] = useState<{ date: string; actual: number; optimized: number }[]>([]);
   const [categoryData, setCategoryData] = useState<CategoryDataPoint[]>([]);
@@ -75,7 +75,6 @@ export default function Dashboard() {
           { name: 'Home & Living', revenue: 28000, color: '#10b981' },
           { name: 'Food & Beverage', revenue: 19500, color: '#f59e0b' },
         ]);
-        setCatalog([]);
         setUsingFallback(true);
       } finally {
         setLoading(false);

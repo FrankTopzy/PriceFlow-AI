@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import ProductCard from '../components/ProductCard';
 import type { CatalogProduct, OptimizationResult, TransactionHistory } from '../types';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
@@ -8,32 +8,6 @@ import { useProducts } from '../context/ProductContext';
 import { api } from '../api/client';
 import { deriveOptimalPrice } from '../api/utils';
 
-// ── Fallback mock products ────────────────────────────────────────────────────
-const MOCK_PRODUCTS: CatalogProduct[] = Array.from({ length: 12 }).map((_, i) => {
-  const categories = ['Electronics', 'Fashion', 'Home & Living', 'Food & Beverage'];
-  const names = [
-    'Wireless Headphones Pro', 'Smart Watch Ultra', 'Bluetooth Speaker', 'Noise-Cancel Earbuds',
-    'Running Shoes Elite', 'Denim Jacket Classic', 'Yoga Mat Premium', 'Protein Powder XL',
-    'Coffee Maker Deluxe', 'LED Desk Lamp', 'Mechanical Keyboard', 'Gaming Mouse RGB',
-  ];
-  return {
-    id: `mock_${i}`,
-    name: names[i % names.length],
-    category: categories[i % categories.length],
-    cost: 60 + i * 5,
-    base_price: 150 + i * 12,
-    msrp: 200 + i * 15,
-    elasticity: -1.5 - (i % 3) * 0.3,
-    brand: 'Demo Brand',
-    current_price: 140 + i * 10,
-    current_stock: Math.max(15, 200 - i * 12),
-    image: `https://images.unsplash.com/photo-${[
-      '1590658268037-6bf12165a8df', '1508130149457-3ec52424826c', '1612444315754-409702c48707', '1545454658-2e8bc11b483f',
-      '1556821840-3a63f95609a7', '1542291026-7eec264c27ff', '1548036328-c9fa89d128fa', '1572635196237-14b3f281503f',
-      '1631679010307-dc298106ec14', '1594857492781-6fca81122a2e', '1581428982868-e410dd048a90', '1598463994503-4f114115456f'
-    ][i % 12]}?w=800&q=80`
-  };
-});
 
 // ── Generate mock history from product ───────────────────────────────────────
 function mockHistory(p: CatalogProduct, days = 14): TransactionHistory[] {
