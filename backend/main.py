@@ -84,6 +84,17 @@ def startup():
     print(f"PriceFlow AI ready — {len(products_list)} products loaded")
 
 
+@app.get("/")
+def root():
+    """Welcome message and API status."""
+    return {
+        "status": "online",
+        "message": "Welcome to PriceFlow AI API",
+        "documentation": "/docs",
+        "version": "1.0.0"
+    }
+
+
 # ─── Product Endpoints ───────────────────────────────────────────────────────
 
 @app.get("/api/products", response_model=list[ProductOut])
