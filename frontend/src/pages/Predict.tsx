@@ -19,13 +19,13 @@ export default function Predict() {
     unit_cost: 120.00,
     competitor_price: 145.00,
     demand_last_week: 320,
-    stock_level: 500,
-    marketing_spend: 1000,
+    stock_level: 1500,
+    marketing_spend: 2000,
     season: 'monsoon',
     day_of_week: 'monday',
     customer_rating: 4.2,
-    initial_stock: 1000,
-    units_already_sold: 250
+    initial_stock: 2500,
+    units_already_sold: 500
   });
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
