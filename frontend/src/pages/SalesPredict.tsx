@@ -61,6 +61,16 @@ export default function SalesPredict() {
         if (!file.name.endsWith('.csv') && file.type !== 'text/csv') {
           throw new Error('Invalid file type. Please upload a valid CSV dataset.');
         }
+
+        // CONTENT VALIDATION: Read the first few bytes to check headers
+        const text = await file.slice(0, 1024).text();
+        const headers = text.split('\n')[0].toLowerCase();
+        const requiredKeywords = ['price', 'sales', 'demand', 'revenue', 'cost'];
+        const hasRelatedContent = requiredKeywords.some(kw => headers.includes(kw));
+
+        if (!hasRelatedContent) {
+          throw new Error('Unrelated Dataset Detected: This dataset does not appear to contain sales or pricing data. Training aborted.');
+        }
       } else {
         throw new Error('Please upload a dataset to calibrate the sales model.');
       }
