@@ -1,8 +1,8 @@
 id,name,category,cost,base_price,msrp,elasticity,brand,image
 E001,Wireless Earbuds Pro,Electronics,18.0,49.99,79.99,-2.1,SoundCore,https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&q=80
-E002,Smart Watch Ultra,Electronics,85.0,199.99,299.99,-1.8,TechFit,https://images.unsplash.com/photo-1544117518-2b041580c79d?w=800&q=80
-E003,Portable Charger 20K,Electronics,12.0,34.99,49.99,-2.5,PowerMax,https://images.unsplash.com/photo-1609091839311-d536819bc248?w=800&q=80
-E004,Bluetooth Speaker,Electronics,22.0,59.99,89.99,-1.9,SoundCore,https://images.unsplash.com/photo-1608156639585-b3a034ef9199?w=800&q=80
+E002,Smart Watch Ultra,Electronics,85.0,199.99,299.99,-1.8,TechFit,https://images.unsplash.com/photo-1508130149457-3ec52424826c?w=800&q=80
+E003,Portable Charger 20K,Electronics,12.0,34.99,49.99,-2.5,PowerMax,https://images.unsplash.com/photo-1612444315754-409702c48707?w=800&q=80
+E004,Bluetooth Speaker,Electronics,22.0,59.99,89.99,-1.9,SoundCore,https://images.unsplash.com/photo-1545454658-2e8bc11b483f?w=800&q=80
 E005,USB-C Hub 7-in-1,Electronics,15.0,39.99,59.99,-1.6,ConnectPro,https://images.unsplash.com/photo-1562770584-eaf50b017307?w=800&q=80
 E006,Mechanical Keyboard,Electronics,45.0,129.99,159.99,-1.4,TypeMaster,https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?w=800&q=80
 E007,Noise Cancelling Headphones,Electronics,110.0,249.99,349.99,-1.2,AudioPure,https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80
@@ -13,21 +13,21 @@ F003,Leather Crossbody Bag,Fashion,20.0,64.99,99.99,-1.5,CraftLeather,https://im
 F004,Aviator Sunglasses,Fashion,8.0,29.99,49.99,-2.8,ShadeCraft,https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&q=80
 F005,Slim Fit Chinos,Fashion,16.0,49.99,69.99,-2.0,UrbanThread,https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=800&q=80
 F006,Minimalist Watch,Fashion,35.0,145.0,195.0,-1.3,TimeLess,https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80
-F007,Denim Jacket,Fashion,22.0,75.0,110.0,-1.9,Indigo,https://images.unsplash.com/photo-1527010159945-c4250922bb42?w=800&q=80
+F007,Denim Jacket,Fashion,22.0,75.0,110.0,-1.9,Indigo,https://images.unsplash.com/photo-1551537482-168122944062?w=800&q=80
 F008,Wool Scarf,Fashion,12.0,39.0,55.0,-2.5,CozyLayer,https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?w=800&q=80
 H001,Scented Candle Set,Home & Living,6.0,24.99,39.99,-3.0,GlowHaus,https://images.unsplash.com/photo-1602874801007-bd458bb1b8b6?w=800&q=80
-H002,Memory Foam Pillow,Home & Living,12.0,44.99,64.99,-1.9,DreamRest,https://images.unsplash.com/photo-1595191830227-705777799c39?w=800&q=80
-H003,Plant Grow Light,Home & Living,10.0,29.99,44.99,-2.2,GreenGlow,https://images.unsplash.com/photo-1509423350716-97f9360b4e5f?w=800&q=80
-H004,Ceramic Dinner Set,Home & Living,25.0,79.99,119.99,-1.4,ArtisanHome,https://images.unsplash.com/photo-1577113310929-212b130fca6a?w=800&q=80
-H005,Essential Oil Diffuser,Home & Living,9.0,34.99,54.99,-2.4,GlowHaus,https://images.unsplash.com/photo-1608501821300-4f99e58baf77?w=800&q=80
+H002,Memory Foam Pillow,Home & Living,12.0,44.99,64.99,-1.9,DreamRest,https://images.unsplash.com/photo-1631679010307-dc298106ec14?w=800&q=80
+H003,Plant Grow Light,Home & Living,10.0,29.99,44.99,-2.2,GreenGlow,https://images.unsplash.com/photo-1594857492781-6fca81122a2e?w=800&q=80
+H004,Ceramic Dinner Set,Home & Living,25.0,79.99,119.99,-1.4,ArtisanHome,https://images.unsplash.com/photo-1581428982868-e410dd048a90?w=800&q=80
+H005,Essential Oil Diffuser,Home & Living,9.0,34.99,54.99,-2.4,GlowHaus,https://images.unsplash.com/photo-1598463994503-4f114115456f?w=800&q=80
 H006,Modern Table Lamp,Home & Living,18.0,65.0,95.0,-1.8,Lumina,https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=800&q=80
 H007,Throw Blanket,Home & Living,14.0,48.0,68.0,-2.1,Indigo,https://images.unsplash.com/photo-1513201099705-a9746e1e201f?w=800&q=80
 H008,Wall Clock,Home & Living,10.0,35.0,55.0,-2.6,TimeLess,https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=800&q=80
-D001,Artisan Coffee Beans 1kg,Food & Beverage,8.0,22.99,34.99,-1.3,BeanCraft,https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=800&q=80
-D002,Organic Matcha Powder,Food & Beverage,10.0,29.99,44.99,-1.6,ZenLeaf,https://images.unsplash.com/photo-1582733315328-d46ed995e38a?w=800&q=80
-D003,Protein Bar Box (12pk),Food & Beverage,7.0,19.99,29.99,-2.6,FuelBar,https://images.unsplash.com/photo-1622484210800-403487c06830?w=800&q=80
-D004,Hot Sauce Collection,Food & Beverage,5.0,16.99,24.99,-2.9,FireKitchen,https://images.unsplash.com/photo-1594921129803-c1aa574488ae?w=800&q=80
-D005,Trail Mix Premium 500g,Food & Beverage,4.0,12.99,19.99,-3.2,NutHarvest,https://images.unsplash.com/photo-1536591375315-1b83cc9065ce?w=800&q=80
+D001,Artisan Coffee Beans 1kg,Food & Beverage,8.0,22.99,34.99,-1.3,BeanCraft,https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80
+D002,Organic Matcha Powder,Food & Beverage,10.0,29.99,44.99,-1.6,ZenLeaf,https://images.unsplash.com/photo-1515696423043-f844750ac13d?w=800&q=80
+D003,Protein Bar Box (12pk),Food & Beverage,7.0,19.99,29.99,-2.6,FuelBar,https://images.unsplash.com/photo-1556275200-5f25977a4198?w=800&q=80
+D004,Hot Sauce Collection,Food & Beverage,5.0,16.99,24.99,-2.9,FireKitchen,https://images.unsplash.com/photo-1576082405621-99527ec56c75?w=800&q=80
+D005,Trail Mix Premium 500g,Food & Beverage,4.0,12.99,19.99,-3.2,NutHarvest,https://images.unsplash.com/photo-1604135393135-2476504f244b?w=800&q=80
 D006,Truffle Oil,Food & Beverage,15.0,45.0,65.0,-1.5,GourmetSet,https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=800&q=80
 D007,Dark Chocolate 70%,Food & Beverage,2.5,8.99,12.99,-2.4,CocoaCraft,https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=800&q=80
-D008,Assorted Tea Box,Food & Beverage,6.0,18.5,28.0,-2.2,ZenLeaf,https://images.unsplash.com/photo-1594631252845-29fc458631b6?w=800&q=80
+D008,Assorted Tea Box,Food & Beverage,6.0,18.5,28.0,-2.2,ZenLeaf,https://images.unsplash.com/photo-1563805900-ee4007838442?w=800&q=80
