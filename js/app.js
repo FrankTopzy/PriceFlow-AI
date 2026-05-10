@@ -131,7 +131,9 @@ const App = (() => {
     container.innerHTML = sorted.map(r => `
       <div class="mover-item" data-product-id="${r.productId}">
         <div class="mover-info">
-          <span class="mover-icon">${r.product.category.icon}</span>
+          <div class="mover-img-container">
+            <img src="${r.product.image}" alt="${r.product.name}" class="mover-img">
+          </div>
           <div>
             <div class="mover-name">${r.product.name}</div>
             <div class="mover-price">${UI.formatCurrency(r.currentPrice)} → ${UI.formatCurrency(r.suggestedPrice)}</div>
@@ -210,6 +212,9 @@ const App = (() => {
             <div class="stock-indicator ${stockClass}">
               <span class="stock-dot"></span> ${p.currentStock} in stock
             </div>
+          </div>
+          <div class="product-image-container">
+            <img src="${p.image}" alt="${p.name}" class="product-image" loading="lazy">
           </div>
           <h3 class="product-name">${p.name}</h3>
           <p class="product-brand">${p.brand}</p>
