@@ -63,7 +63,7 @@ class RidgeDemandModel:
         self.coefficients["intercept"] = round(float(self.model.intercept_), 4)
         self.is_trained = True
 
-        print(f"📐 Ridge model trained — R²={self.metrics['r2']}, MAE={self.metrics['mae']}, MAPE={self.metrics['mape']}%")
+        print(f"Ridge model trained — R²={self.metrics['r2']}, MAE={self.metrics['mae']}, MAPE={self.metrics['mape']}%")
 
     def predict(self, features: dict) -> dict:
         """Predict demand for given features. Returns demand + confidence interval."""
