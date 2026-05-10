@@ -1,7 +1,6 @@
 import type { 
   ProductWithHistory, 
   OptimizationResult, 
-  SimulationResult, 
   KPIResponse,
   RevenueChartResponse,
   CategoryDataPoint, 
