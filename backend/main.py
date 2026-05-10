@@ -50,27 +50,99 @@ products_list = []
 products_df = None
 history_df = None
 features_df = None
+data_error = None
+
+
+def validate_dataframes(products: pd.DataFrame, history: pd.DataFrame):
+    """Validate that the datasets are related to pricing and match the expected schema."""
+    required_product_cols = {'id', 'base_price', 'cost'}
+    required_history_cols = {'product_id', 'price', 'demand', 'date'}
+    
+    # 1. Schema Check
+    if not required_product_cols.issubset(products.columns):
+        missing = required_product_cols - set(products.columns)
+        raise ValueError(f"Invalid Product Dataset: Missing columns {missing}")
+        
+    if not required_history_cols.issubset(history.columns):
+        missing = required_history_cols - set(history.columns)
+        raise ValueError(f"Invalid Transaction Dataset: Missing columns {missing}")
+
+    # 2. Relationship Check
+    product_ids = set(products['id'].unique())
+    history_ids = set(history['product_id'].unique())
+    
+    if not history_ids.issubset(product_ids):
+        unlinked = history_ids - product_ids
+        raise ValueError(f"Unrelated Dataset: History contains product IDs {list(unlinked)[:5]} not found in catalog")
+
+    # 3. Data Sanity Check
+    if (products['base_price'] <= 0).any():
+        raise ValueError("Invalid Data: Base prices must be positive")
+    
+    print("[SUCCESS] Dataset validation passed")
 
 
 @app.on_event("startup")
 def startup():
-    """Generate data, train models, and initialize optimizer on startup."""
-    global optimizer, products_list, products_df, history_df, features_df
+    """Load/Generate data, train models, and initialize optimizer on startup."""
+    global optimizer, products_list, products_df, history_df, features_df, data_error
 
     data_dir = os.path.join(os.path.dirname(__file__), "data")
+    products_path = os.path.join(data_dir, "products.csv")
+    history_path = os.path.join(data_dir, "transactions.csv")
+    features_path = os.path.join(data_dir, "features.csv")
 
-    # Generate datasets
-    print("Generating datasets...")
-    products_df, history_df, features_df = generate_and_save_datasets(data_dir)
+    try:
+        # Try to load existing datasets (to support user "uploads")
+        if os.path.exists(products_path) and os.path.exists(history_path):
+            print("Verifying user-provided datasets...")
+            products_df = pd.read_csv(products_path)
+            history_df = pd.read_csv(history_path)
+            
+            # CRITICAL: Validate the datasets
+            try:
+                validate_dataframes(products_df, history_df)
+                data_error = None
+            except ValueError as ve:
+                data_error = f"FATAL DATA ERROR: {str(ve)}"
+                print(f"\n{'!'*80}\n{data_error}\n{'!'*80}\n")
+                # RAISE error to stop the system as requested
+                raise RuntimeError(data_error)
 
-    # Build products list with current prices and stock
+            if os.path.exists(features_path):
+                features_df = pd.read_csv(features_path)
+            else:
+                from data.generator import engineer_features
+                features_df = engineer_features(history_df)
+        else:
+            # Only generate synthetic if files are missing
+            print("Missing datasets, generating defaults...")
+            products_df, history_df, features_df = generate_and_save_datasets(data_dir)
+            data_error = None
+
+    except Exception as e:
+        data_error = f"System Error: {str(e)}"
+        print(f"[CRITICAL] {data_error}")
+        return
+
+    # Build products list
     products_list = []
-    for p in PRODUCTS:
-        prod_history = history_df[history_df["product_id"] == p["id"]]
+    for _, row in products_df.iterrows():
+        p_id = row['id']
+        prod_history = history_df[history_df["product_id"] == p_id]
         latest = prod_history.sort_values("date").iloc[-1] if not prod_history.empty else {}
+        
         products_list.append({
-            **p,
-            "current_price": float(latest.get("price", p["base_price"])),
+            "id": p_id,
+            "name": row['name'],
+            "category": row['category'],
+            "cost": float(row['cost']),
+            "base_price": float(row['base_price']),
+            "msrp": float(row.get('msrp', row['base_price'] * 1.2)),
+            "elasticity": float(row.get('elasticity', -1.5)),
+            "brand": row.get('brand', 'Unknown'),
+            "image": row.get('image', ''),
+            "current_price": float(latest.get("price", row["base_price"])),
             "current_stock": int(latest.get("stock", 100)),
         })
 
@@ -84,9 +156,30 @@ def startup():
     print(f"PriceFlow AI ready — {len(products_list)} products loaded")
 
 
+def check_data_ready():
+    """Helper to ensure models are trained and data is valid before serving requests."""
+    if data_error:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "error": "Dataset Integration Error",
+                "message": data_error,
+                "action": "Please ensure your CSV files match the PriceFlow schema and products are correctly linked."
+            }
+        )
+    if not trainer.is_ready:
+        raise HTTPException(status_code=503, detail="Models still training...")
+
+
 @app.get("/")
 def root():
     """Welcome message and API status."""
+    if data_error:
+        return {
+            "status": "error",
+            "message": data_error,
+            "version": "1.0.0"
+        }
     return {
         "status": "online",
         "message": "Welcome to PriceFlow AI API",
@@ -100,12 +193,14 @@ def root():
 @app.get("/api/products", response_model=list[ProductOut])
 def get_products():
     """List all products with current prices."""
+    check_data_ready()
     return [ProductOut(**p) for p in products_list]
 
 
 @app.get("/api/products/{product_id}")
 def get_product(product_id: str):
     """Get a single product with full details."""
+    check_data_ready()
     product = _find_product(product_id)
     ctx = trainer.get_latest_context(product_id)
     return {**product, "latest_context": ctx}
@@ -114,6 +209,7 @@ def get_product(product_id: str):
 @app.get("/api/products/{product_id}/history", response_model=list[HistoryRecord])
 def get_product_history(product_id: str):
     """Get 90-day transaction history for a product."""
+    check_data_ready()
     _find_product(product_id)
     prod_hist = history_df[history_df["product_id"] == product_id].sort_values("date")
     return [
@@ -132,12 +228,14 @@ def get_product_history(product_id: str):
 @app.get("/api/models/metrics", response_model=list[ModelMetrics])
 def get_model_metrics():
     """Get performance metrics for both trained models."""
+    check_data_ready()
     return [ModelMetrics(**m) for m in trainer.get_all_metrics()]
 
 
 @app.get("/api/models/{product_id}/importance", response_model=list[FeatureImportance])
 def get_feature_importance(product_id: str):
     """Get XGBoost feature importance for a product."""
+    check_data_ready()
     _find_product(product_id)
     return [FeatureImportance(**f) for f in trainer.get_feature_importance(product_id)]
 
@@ -145,6 +243,7 @@ def get_feature_importance(product_id: str):
 @app.get("/api/models/{product_id}/demand-curve", response_model=list[DemandCurvePoint])
 def get_demand_curve(product_id: str):
     """Generate demand curve across price range."""
+    check_data_ready()
     product = _find_product(product_id)
     ctx = trainer.get_latest_context(product_id)
     curve = trainer.generate_demand_curve(product, ctx)
@@ -154,6 +253,7 @@ def get_demand_curve(product_id: str):
 @app.get("/api/models/coefficients")
 def get_ridge_coefficients():
     """Get Ridge model coefficients for interpretability."""
+    check_data_ready()
     return trainer.get_ridge_coefficients()
 
 
@@ -162,6 +262,7 @@ def get_ridge_coefficients():
 @app.post("/api/optimize", response_model=BatchOptimizationResponse)
 def batch_optimize():
     """Batch optimize all products."""
+    check_data_ready()
     result = optimizer.batch_optimize(products_list)
     return BatchOptimizationResponse(
         results=[OptimizationResult(**r) for r in result["results"]],
@@ -172,6 +273,7 @@ def batch_optimize():
 @app.post("/api/optimize/{product_id}", response_model=OptimizationResult)
 def optimize_product(product_id: str):
     """Optimize a single product."""
+    check_data_ready()
     product = _find_product(product_id)
     result = optimizer.optimize(product)
     return OptimizationResult(**result)
@@ -180,6 +282,7 @@ def optimize_product(product_id: str):
 @app.post("/api/simulate", response_model=OptimizationResult)
 def run_simulation(req: SimulationRequest):
     """Run a what-if simulation scenario."""
+    check_data_ready()
     product = _find_product(req.product_id)
     scenario = {
         "competitor_price": req.competitor_price or product["base_price"],
@@ -198,6 +301,7 @@ def run_simulation(req: SimulationRequest):
 @app.get("/api/dashboard/kpis", response_model=KPIResponse)
 def get_dashboard_kpis():
     """Get dashboard KPI metrics."""
+    check_data_ready()
     batch = optimizer.batch_optimize(products_list)
     s = batch["summary"]
     results = batch["results"]
