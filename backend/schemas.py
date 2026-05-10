@@ -18,6 +18,7 @@ class ProductOut(BaseModel):
     brand: str
     current_price: float
     current_stock: int
+    image: Optional[str] = None
 
 
 class HistoryRecord(BaseModel):
