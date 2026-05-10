@@ -25,6 +25,11 @@ const MOCK_PRODUCTS: CatalogProduct[] = Array.from({ length: 12 }).map((_, i) =>
     brand: 'Demo Brand',
     current_price: 140 + i * 10,
     current_stock: Math.max(15, 200 - i * 12),
+    image: `https://images.unsplash.com/photo-${[
+      '1590658268037-6bf12165a8df', '1544117518-2b041580c79d', '1609091839311-d536819bc248', '1608156639585-b3a034ef9199',
+      '1556821840-3a63f95609a7', '1542291026-7eec264c27ff', '1548036328-c9fa89d128fa', '1572635196237-14b3f281503f',
+      '1602874801007-bd458bb1b8b6', '1595191830227-705777799c39', '1509423350716-97f9360b4e5f', '1577113310929-212b130fca6a'
+    ][i % 12]}?w=800&q=80`
   };
 });
 
@@ -236,6 +241,11 @@ export default function Products() {
           </div>
 
           <div className="p-5 flex-1 overflow-y-auto space-y-5">
+            {/* Hero Image */}
+            <div className="detail-img-container">
+              <img src={selectedProduct.image} alt={selectedProduct.name} className="detail-img" />
+            </div>
+
             {/* Stats grid */}
             <div className="grid grid-cols-2 gap-3">
               {[
