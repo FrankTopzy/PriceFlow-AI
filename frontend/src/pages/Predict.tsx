@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Calculator, UploadCloud, File, AlertCircle, TrendingUp } from 'lucide-react';
+import { Calculator, UploadCloud, File, AlertCircle, TrendingUp, Volume2, VolumeX } from 'lucide-react';
 import { useCurrency } from '../context/CurrencyContext';
+import { speak, stopSpeaking } from '../utils/speech';
 
 export default function Predict() {
   const [file, setFile] = useState<File | null>(null);
@@ -10,6 +11,7 @@ export default function Predict() {
   const [profitOnSold, setProfitOnSold] = useState<number | null>(null);
   const [projectedProfit, setProjectedProfit] = useState<number | null>(null);
   const [advice, setAdvice] = useState<string | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { formatPrice, currency } = useCurrency();
   
@@ -354,7 +356,29 @@ export default function Predict() {
               </div>
             )}
             {advice && (
-              <div className="w-full bg-surface border border-primary/20 rounded-lg p-4 text-sm text-text-primary text-center mt-4 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+              <div className="w-full bg-surface border border-primary/20 rounded-lg p-4 text-sm text-text-primary text-center mt-4 shadow-[0_0_15px_rgba(59,130,246,0.1)] relative group">
+                <button 
+                  onClick={() => {
+                    if (isSpeaking) {
+                      stopSpeaking();
+                      setIsSpeaking(false);
+                    } else {
+                      speak(advice);
+                      setIsSpeaking(true);
+                      // Reset state when speech ends
+                      const checkSpeech = setInterval(() => {
+                        if (!window.speechSynthesis.speaking) {
+                          setIsSpeaking(false);
+                          clearInterval(checkSpeech);
+                        }
+                      }, 500);
+                    }
+                  }}
+                  className="absolute top-2 right-2 p-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                  title={isSpeaking ? "Stop Voiceover" : "Play Voiceover"}
+                >
+                  {isSpeaking ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                </button>
                 <span className="font-semibold text-primary flex items-center justify-center gap-2 mb-1">
                   <TrendingUp size={16} /> Strategic Advice
                 </span>
